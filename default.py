@@ -13,7 +13,7 @@ import xbmcaddon
 CHANNELS_URL = 'https://wintray.akado-ural.ru/wintray.php?action=media'
 
 
-def get_params(url=sys.argv[2]):
+def get_params(url):
     parameters = {}
     p1 = url.find('?')
     if p1 >= 0:
@@ -60,17 +60,19 @@ def make_list_item(stream):
     return item
 
 
-params = get_params()
-try:
-    if 'uri' in params:
-        xbmc.Player().play(item=params['uri'], listitem=make_list_item(params))
-    else:
-        for channel in get_channels():
-            link_arguments = {k: v.encode('utf-8') for k, v in channel.items()}
-            link = sys.argv[0] + '?' + urllib.urlencode(link_arguments)
-            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=link, listitem=make_list_item(channel))
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
-except IOError as e:
-    addon = xbmcaddon.Addon('plugin.video.akado-ural.ru')
-    xbmc.executebuiltin('Notification(%s, %s, %d, %s)'
-                        % (addon.getAddonInfo('name'), str(e), 5000, addon.getAddonInfo('icon')))
+def main(params):
+    try:
+        if 'uri' in params:
+            xbmc.Player().play(item=params['uri'], listitem=make_list_item(params))
+        else:
+            for channel in get_channels():
+                link_arguments = {k: v.encode('utf-8') for k, v in channel.items()}
+                link = sys.argv[0] + '?' + urllib.urlencode(link_arguments)
+                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=link, listitem=make_list_item(channel))
+            xbmcplugin.endOfDirectory(int(sys.argv[1]))
+    except IOError as e:
+        addon = xbmcaddon.Addon('plugin.video.akado-ural.ru')
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'
+                            % (addon.getAddonInfo('name'), str(e), 5000, addon.getAddonInfo('icon')))
+
+main(get_params(sys.argv[2]))
