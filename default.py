@@ -30,10 +30,11 @@ def get_params(url):
 def get_channels():
     channels = []
     try:
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        response = urllib2.urlopen(CHANNELS_URL, context=ctx)
+        if hasattr(ssl, '_create_unverified_context'):
+            response = urllib2.urlopen(CHANNELS_URL, context=ssl._create_unverified_context())
+        else:
+            response = urllib2.urlopen(CHANNELS_URL)
+
         if not response or response.getcode() != 200:
             raise IOError('Wrong response code')
 
