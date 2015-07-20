@@ -41,9 +41,9 @@ def get_channels():
         root = ET.fromstring(response.read())
         for stream in root.findall('./streams/stream'):
             channels.append({
-                'title': stream.attrib['title'].replace('[TV] ', ''),
+                'title': stream.attrib['title'].replace('[TV] ', '').encode('utf-8'),
                 'uri':   stream.attrib['uri'],
-                'desc':  stream.find('descr').text
+                'desc':  stream.find('descr').text.encode('utf-8')
             })
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -67,8 +67,7 @@ def main(params):
             xbmc.Player().play(item=params['uri'], listitem=make_list_item(params))
         else:
             for channel in get_channels():
-                link_arguments = {k: v.encode('utf-8') for k, v in channel.items()}
-                link = sys.argv[0] + '?' + urllib.urlencode(link_arguments)
+                link = sys.argv[0] + '?' + urllib.urlencode(channel.items())
                 xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=link, listitem=make_list_item(channel))
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
     except IOError as e:
