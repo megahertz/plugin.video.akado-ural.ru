@@ -4,7 +4,7 @@ Kodi/Xbmc плагин для просомтра IPTV каналов для по
 
 ## Установка
 
-Скачайте [plugin](https://github.com/megahertz/plugin.video.akado-ural.ru/archive/1.1.0.zip)
+Скачайте [плагин](https://github.com/megahertz/plugin.video.akado-ural.ru/archive/1.1.0.zip)
 и установите через Дополнения → Мои дополнения → .. → Установить из файла ZIP
 Установленный плагин появится в разделе Видео → Видеодополнения
 
