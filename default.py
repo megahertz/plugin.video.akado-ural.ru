@@ -29,6 +29,8 @@ def get_params(url):
 
 def get_channels():
     channels = []
+    channel_ids = []
+
     try:
         if hasattr(ssl, '_create_unverified_context'):
             response = urllib2.urlopen(CHANNELS_URL, context=ssl._create_unverified_context())
@@ -40,11 +42,17 @@ def get_channels():
 
         root = ET.fromstring(response.read())
         for stream in root.findall('./streams/stream'):
+            if stream.attrib['id'] in channel_ids:
+                continue
+
             channels.append({
                 'title': stream.attrib['title'].replace('[TV] ', '').encode('utf-8'),
-                'uri':   stream.attrib['uri'],
+                'uri':   stream.attrib['alt'],
                 'desc':  stream.find('descr').text.encode('utf-8')
             })
+
+            channel_ids.append(stream.attrib['id'])
+
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -52,7 +60,7 @@ def get_channels():
         xbmc.log(exception, xbmc.LOGERROR)
         raise IOError("Service is not available")
 
-    return channels
+    return sorted(channels, key=lambda ch: ch['title'])
 
 
 def make_list_item(stream):
